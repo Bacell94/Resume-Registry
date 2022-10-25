@@ -52,3 +52,27 @@ function validatePosition() {
     }
     return true;
   }
+
+  function insertPosition($pid){
+    $rank = 1;
+    
+    for($i=1; $i<=9; $i++) {
+      if ( ! isset($_POST['year'.$i]) ) continue;
+      if ( ! isset($_POST['desc'.$i]) ) continue;
+    
+      $year = $_POST['year'.$i];
+      $desc = $_POST['desc'.$i];
+      $stmt = $pdo->prepare('INSERT INTO Position
+        (profile_id, rank, year, description)
+        VALUES ( :pid, :rank, :year, :desc)');
+
+      $stmt->execute(array(
+      ':pid' => $pid,
+      ':rank' => $rank,
+      ':year' => $year,
+      ':desc' => $desc)
+      );
+    
+      $rank++;
+    }
+  }

@@ -42,26 +42,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     $profile_id = $pdo->lastInsertId();
     $rank = 1;
 
-    for($i=1; $i<=9; $i++) {
-      if ( ! isset($_POST['year'.$i]) ) continue;
-      if ( ! isset($_POST['desc'.$i]) ) continue;
-    
-      $year = $_POST['year'.$i];
-      $desc = $_POST['desc'.$i];
-
-      $stmt = $pdo->prepare('INSERT INTO Position
-        (profile_id, rank, year, description)
-        VALUES ( :pid, :rank, :year, :desc)');
-    
-      $stmt->execute(array(
-      ':pid' => $profile_id,
-      ':rank' => $rank,
-      ':year' => $year,
-      ':desc' => $desc)
-      );
-    
-      $rank++;
-    }
+    insertPosition($profile_id);
 
     $_SESSION['success'] = 'Record Added';
 
@@ -104,12 +85,19 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     <input type="submit" value="+" id="addPos">
     </p>
     <div id="position_fields"></div>
+    <p>Education:
+    <input type="submit" value="+" id="addEdu">
+    </p>
+    <div id="education_fields"></div>
     <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
     <input type="submit" value="Add"/>
     <a href="index.php">Cancel</a>
     </form>
     <script type="text/javascript">
+
         countPos = 0;
+        countEdu = 0;
+
 
         // http://stackoverflow.com/questions/17650776/add-remove-html-inside-div-using-javascript
         $(document).ready(function(){
@@ -117,10 +105,12 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
             $('#addPos').click(function(event){
                 // http://api.jquery.com/event.preventdefault/
                 event.preventDefault();
+
                 if ( countPos >= 9 ) {
                     alert("Maximum of nine position entries exceeded");
                     return;
                 }
+
                 countPos++;
                 
                 $('#position_fields').append(
@@ -131,7 +121,28 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                     <textarea name="desc'+countPos+'" rows="8" cols="80"></textarea>\
                     </div>');
             });
+
+            $('#addEdu').click(function(event){
+                // http://api.jquery.com/event.preventdefault/
+                event.preventDefault();
+
+                if ( countEdu >= 9 ) {
+                    alert("Maximum of nine education entries exceeded");
+                    return;
+                }
+                
+                countEdu++;
+                
+                $('#education_fields').append(
+                    '<div id="education'+countEdu+'"> \
+                    <p>Year: <input type="text" name="year'+countEdu+'" value="" /> \
+                    <input type="button" value="-" \
+                        onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
+                    <p>Institute: <input type="text" name="institute'+countEdu+'"></p>\
+                    </div>');
+            });
         });
+
     </script>
 </body>
 </html>
