@@ -24,6 +24,12 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         return;
     }
 
+    if(is_string(validateEducation())){
+        $_SESSION['error'] = validateEducation();
+        header($header);
+        return;
+    }
+
 
 
     $sql = "INSERT INTO profile (first_name, last_name, email, headline, summary, user_id)

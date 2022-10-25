@@ -18,8 +18,15 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         header($header);
         return;
     }
+    
     if(is_string(validatePosition())){
         $_SESSION['error'] = validatePosition();
+        header($header);
+        return;
+    }
+
+    if(is_string(validateEducation())){
+        $_SESSION['error'] = validateEducation();
         header($header);
         return;
     }
