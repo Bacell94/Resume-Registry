@@ -40,10 +40,16 @@ $summary = htmlentities($row['summary']);
     <p>Positions:
         <ul>
             <?php           
+
+            $pos = false;
             $stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
             $stmt->execute(array(':profile_id' => $_GET['profile_id']));
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                $pos = true;
                 echo "<li>".htmlentities($row['description'])." ".htmlentities($row['year'])."</li>";
+            }
+            if(!$pos){
+                echo "<li>No positions added</li>";
             }
             ?>
         </ul>

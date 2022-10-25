@@ -29,9 +29,12 @@ session_start();
         
     	$stmt = $pdo->query("SELECT * FROM profile where user_id =".$_SESSION['user_id']);
         
+        $entry = false;
 
         echo('<table border="1">');
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+
+            $entry = true;
 
             echo "<tr><td>";
             echo('<a href="view.php?profile_id='.$row['profile_id'].'">'.htmlentities($row['first_name'])." ".htmlentities($row['last_name']).'</a>');
@@ -47,6 +50,10 @@ session_start();
             
         }
         echo '</table>';
+
+        if(!$entry){
+            echo "<p>Not entries found</p>";
+        }
         echo "<p><a href='logout.php'>Logout</a></p>";
     }
     ?>
