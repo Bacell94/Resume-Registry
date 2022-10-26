@@ -38,7 +38,8 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                                email = :email,
                                headline = :headline,
                                summary = :summary
-                         WHERE profile_id = :profile_id";
+                         WHERE profile_id = :profile_id
+                           AND user_id = :uid";
 
     $stmt = $pdo->prepare($sql);
 
@@ -48,38 +49,19 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         ':email' => $_POST['email'],
         ':headline' => $_POST['headline'],
         ':summary' => $_POST['summary'],
-        ':profile_id' => $_GET['profile_id']));
+        ':profile_id' => $_GET['profile_id'],
+        ':uid' => $_SESSION['user_id']));
     
     // delete position data
     $stmt = $pdo->prepare('DELETE FROM Position WHERE profile_id=:pid');
     $stmt->execute(array( ':pid' => $_REQUEST['profile_id']));
+    
+    // delete education data
+    $stmt = $pdo->prepare('DELETE FROM education WHERE profile_id=:pid');
+    $stmt->execute(array( ':pid' => $_REQUEST['profile_id']));
 
     // insert position data
-    // insertPosition($_REQUEST['profile_id']);
-
-    $rank = 1;
-  
-    for($i=1; $i<=9; $i++) {
-
-      if ( ! isset($_POST['year'.$i]) ) continue;
-      if ( ! isset($_POST['desc'.$i]) ) continue;
-    
-      $year = $_POST['year'.$i];
-      $desc = $_POST['desc'.$i];
-
-      $stmt = $pdo->prepare('INSERT INTO Position
-        (profile_id, rank, year, description)
-        VALUES ( :pid, :rank, :year, :desc)');
-
-      $stmt->execute(array(
-      ':pid' => $_REQUEST['profile_id'],
-      ':rank' => $rank,
-      ':year' => $year,
-      ':desc' => $desc)
-      );
-    
-      $rank++;
-    }
+    insertPosition($pdo,$_REQUEST['profile_id']);
 
     $_SESSION['success'] = 'Record updated';
 
@@ -88,8 +70,9 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
 }
 
 // select profile data
-$stmt = $pdo->prepare("SELECT * FROM profile where profile_id = :id");
-$stmt->execute(array(":id" => $_GET['profile_id']));
+$stmt = $pdo->prepare("SELECT * FROM profile where profile_id = :pid AND user_id = :uid");
+$stmt->execute(array(':pid' => $_GET['profile_id']),
+                    ':uid' => $_SESSION['uid']);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 if ( $row === false ) {
     $_SESSION['error'] = 'Bad value for profile_id';
@@ -105,8 +88,8 @@ $sy = htmlentities($row['summary']);
 $profile_id = $row['profile_id'];
 
 // select position data
-$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
-$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :pid');
+$stmt->execute(array(':pid' => $_GET['profile_id']));
 $position = array();
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $position[] = $row;
@@ -128,6 +111,9 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css"> 
+    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
     <title>Bacell Saleh eaa35402</title>
 </head>
 <body>
@@ -183,7 +169,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                 echo '<div id="education'.$countEdu.'">';
                 echo '<p>Year: <input type="text" name="year'.$countEdu.'" value="'.htmlentities($row['year']).'" />'; 
                 echo '<input type="button" value="-"onclick="$(\'#education'.$countEdu.'\').remove();return false;"></p>';
-                echo '<p>Institute: <input name="name'.$countEdu.'" value ="'.htmlentities($row['name']).'">';
+                echo '<p>Institute: <input type="text" class="school" name="school'.$countEdu.'" value ="'.htmlentities($row['name']).'">';
                 echo '</div>';
             }
         }
@@ -217,6 +203,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                     </div>');
             });
 
+
             $('#addEdu').click(function(event){
                 // http://api.jquery.com/event.preventdefault/
                 event.preventDefault();
@@ -233,9 +220,12 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                     <p>Year: <input type="text" name="year'+countEdu+'" value="" /> \
                     <input type="button" value="-" \
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
-                    <p>Institute: <input type="text" name="name'+countEdu+'"></p>\
+                    <p>Institute: <input type="text" class="school" name="school'+countEdu+'"></p>\
                     </div>');
             });
+
+            $('.school').autocomplete({ source: "school.php" });
+
         });
     </script>
     <p><input type="submit" value="Save"/>

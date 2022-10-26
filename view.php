@@ -17,8 +17,8 @@ $headline = htmlentities($row['headline']);
 $summary = htmlentities($row['summary']);
 
 // select position data
-$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
-$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = pid');
+$stmt->execute(array(':pid' => $_GET['profile_id']));
 $position = array();
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $position[] = $row;

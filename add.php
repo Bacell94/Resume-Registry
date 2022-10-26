@@ -47,31 +47,9 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
 
     $profile_id = $pdo->lastInsertId();
 
-    // insertPosition($profile_id);
+    insertPosition($pdo,$profile_id);
 
-    $rank = 1;
-
-    for($i=1; $i<=9; $i++) {
-
-      if ( ! isset($_POST['year'.$i]) ) continue;
-      if ( ! isset($_POST['desc'.$i]) ) continue;
     
-      $year = $_POST['year'.$i];
-      $desc = $_POST['desc'.$i];
-
-      $stmt = $pdo->prepare('INSERT INTO Position
-        (profile_id, rank, year, description)
-        VALUES ( :pid, :rank, :year, :desc)');
-
-      $stmt->execute(array(
-      ':pid' => $profile_id,
-      ':rank' => $rank,
-      ':year' => $year,
-      ':desc' => $desc)
-      );
-    
-      $rank++;
-    }
 
     $_SESSION['success'] = 'Record Added';
 
@@ -90,6 +68,9 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta first_name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css"> 
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
     <title>Bacell Saleh eaa35402</title>
 </head>
 <body>
@@ -151,6 +132,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                     </div>');
             });
 
+
             $('#addEdu').click(function(event){
                 // http://api.jquery.com/event.preventdefault/
                 event.preventDefault();
@@ -167,9 +149,12 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                     <p>Year: <input type="text" name="year'+countEdu+'" value="" /> \
                     <input type="button" value="-" \
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
-                    <p>Institute: <input type="text" name="name'+countEdu+'"></p>\
+                    <p>Institute: <input class="school" type="text" name="school'+countEdu+'" value=""></p>\
                     </div>');
             });
+
+            $('.school').autocomplete({ source: "school.php" });
+
         });
 
     </script>
