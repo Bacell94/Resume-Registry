@@ -55,7 +55,31 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     $stmt->execute(array( ':pid' => $_REQUEST['profile_id']));
 
     // insert position data
-    insertPosition($_REQUEST['profile_id']);
+    // insertPosition($_REQUEST['profile_id']);
+
+    $rank = 1;
+  
+    for($i=1; $i<=9; $i++) {
+
+      if ( ! isset($_POST['year'.$i]) ) continue;
+      if ( ! isset($_POST['desc'.$i]) ) continue;
+    
+      $year = $_POST['year'.$i];
+      $desc = $_POST['desc'.$i];
+
+      $stmt = $pdo->prepare('INSERT INTO Position
+        (profile_id, rank, year, description)
+        VALUES ( :pid, :rank, :year, :desc)');
+
+      $stmt->execute(array(
+      ':pid' => $_REQUEST['profile_id'],
+      ':rank' => $rank,
+      ':year' => $year,
+      ':desc' => $desc)
+      );
+    
+      $rank++;
+    }
 
     $_SESSION['success'] = 'Record updated';
 

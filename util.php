@@ -1,4 +1,5 @@
 <?php
+require_once "pdo.php";
 
 function flashMessages(){
     if(isset($_SESSION['error'])){
@@ -72,25 +73,30 @@ function validateEducation() {
   return true;
 }
 
-function insertPosition($pid){
-  $rank = 1;
+// fix????
+
+// function insertPosition($pid){
+//   $rank = 1;
   
-  for($i=1; $i<=9; $i++) {
-    if ( ! isset($_POST['year'.$i]) ) continue;
-    if ( ! isset($_POST['desc'.$i]) ) continue;
+//   for($i=1; $i<=9; $i++) {
+
+//     if ( ! isset($_POST['year'.$i]) ) continue;
+//     if ( ! isset($_POST['desc'.$i]) ) continue;
   
-    $year = $_POST['year'.$i];
-    $desc = $_POST['desc'.$i];
-    $stmt = $pdo->prepare('INSERT INTO Position
-      (profile_id, rank, year, description)
-      VALUES ( :pid, :rank, :year, :desc)');
-    $stmt->execute(array(
-    ':pid' => $pid,
-    ':rank' => $rank,
-    ':year' => $year,
-    ':desc' => $desc)
-    );
+//     $year = $_POST['year'.$i];
+//     $desc = $_POST['desc'.$i];
+
+//     $stmt = $pdo->prepare('INSERT INTO Position
+//       (profile_id, rank, year, description)
+//       VALUES ( :pid, :rank, :year, :desc)');
+
+//     $stmt->execute(array(
+//     ':pid' => $pid,
+//     ':rank' => $rank,
+//     ':year' => $year,
+//     ':desc' => $desc)
+//     );
   
-    $rank++;
-  }
-}
+//     $rank++;
+//   }
+// }

@@ -46,9 +46,32 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         ':user_id' => $_SESSION['user_id']));
 
     $profile_id = $pdo->lastInsertId();
+
+    // insertPosition($profile_id);
+
     $rank = 1;
 
-    insertPosition($profile_id);
+    for($i=1; $i<=9; $i++) {
+
+      if ( ! isset($_POST['year'.$i]) ) continue;
+      if ( ! isset($_POST['desc'.$i]) ) continue;
+    
+      $year = $_POST['year'.$i];
+      $desc = $_POST['desc'.$i];
+
+      $stmt = $pdo->prepare('INSERT INTO Position
+        (profile_id, rank, year, description)
+        VALUES ( :pid, :rank, :year, :desc)');
+
+      $stmt->execute(array(
+      ':pid' => $profile_id,
+      ':rank' => $rank,
+      ':year' => $year,
+      ':desc' => $desc)
+      );
+    
+      $rank++;
+    }
 
     $_SESSION['success'] = 'Record Added';
 
@@ -144,7 +167,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                     <p>Year: <input type="text" name="year'+countEdu+'" value="" /> \
                     <input type="button" value="-" \
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
-                    <p>Institute: <input type="text" name="institute'+countEdu+'"></p>\
+                    <p>Institute: <input type="text" name="name'+countEdu+'"></p>\
                     </div>');
             });
         });
