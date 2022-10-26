@@ -6,8 +6,8 @@ session_start();
 
 access();
 
+// select profile data
 $stmt = $pdo->query('SELECT * FROM profile where profile_id ='.$_GET['profile_id']);
-
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $first_name = htmlentities($row['first_name']);
@@ -15,6 +15,22 @@ $last_name = htmlentities($row['last_name']);
 $email = htmlentities($row['email']);
 $headline = htmlentities($row['headline']);
 $summary = htmlentities($row['summary']);
+
+// select position data
+$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
+$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$position = array();
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    $position[] = $row;
+}
+
+// select education data
+$stmt = $pdo->prepare('SELECT * FROM education WHERE profile_id = :profile_id');
+$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$education = array();
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    $education[] = $row;
+}
 
 ?>
 
@@ -37,23 +53,30 @@ $summary = htmlentities($row['summary']);
         <br> 
         <?= $summary ?>
     </p>
-    <p>Positions:
-        <ul>
-            <?php           
 
-            $pos = false;
-            $stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
-            $stmt->execute(array(':profile_id' => $_GET['profile_id']));
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                $pos = true;
-                echo "<li>".htmlentities($row['description'])." ".htmlentities($row['year'])."</li>";
-            }
-            if(!$pos){
-                echo "<li>No positions added</li>";
-            }
-            ?>
-        </ul>
-    </p>
+    <?php
+    // display position and education data if available
+
+    if(count($position) !== 0){
+        echo "<p>Positions:";
+        echo "<ul>";
+        foreach($position as $row){
+            echo "<li>".htmlentities($row['year']).": ".htmlentities($row['description'])."</li>";
+        }
+        echo "</ul>";
+        echo "</p>";
+    }
+
+    if(count($education) !== 0){
+        echo "<p>Education:";
+        echo "<ul>";
+        foreach($education as $row){
+            echo "<li>".htmlentities($row['year']).": ".htmlentities($row['name'])."</li>";
+        }
+        echo "</ul>";
+        echo "</p>";
+    }
+    ?>
     <p><a href="index.php">Done</a></p>
     
 </body>
