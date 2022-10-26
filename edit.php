@@ -13,6 +13,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     $header = 'location:edit.php?profile_id?'.$_GET['profile_id'];
 
     // data validation from util.php
+
     if(is_string(validateProfile())){
         $_SESSION['error'] = validateProfile();
         header($header);
@@ -62,6 +63,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     return;
 }
 
+// select profile data
 $stmt = $pdo->prepare("SELECT * FROM profile where profile_id = :id");
 $stmt->execute(array(":id" => $_GET['profile_id']));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -77,6 +79,22 @@ $yr = htmlentities($row['email']);
 $mg = htmlentities($row['headline']);
 $sy = htmlentities($row['summary']);
 $profile_id = $row['profile_id'];
+
+// select position data
+$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
+$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$position = array();
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    $position[] = $row;
+}
+
+// select education data
+$stmt = $pdo->prepare('SELECT * FROM education WHERE profile_id = :profile_id');
+$stmt->execute(array(':profile_id' => $_GET['profile_id']));
+$education = array();
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    $education[] = $row;
+}
 
 ?>
 <!DOCTYPE html>
@@ -110,31 +128,55 @@ $profile_id = $row['profile_id'];
     <p>Position:
     <input type="submit" value="+" id="addPos">
     </p>
+    <p>Education:
+    <input type="submit" value="+" id="addEdu">
+    </p>
+    <div id="education_fields"></div>
     <div id="position_fields">
 
     <?php
-        $stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = :profile_id');
-        $stmt->execute(array(':profile_id' => $_GET['profile_id']));
+        //display previosly added education and position data 
+
         $countPos = 0;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $countPos++;
-            echo '<div id="position'.$countPos.'">';
-            echo '<p>Year: <input type="text" name="year'.$countPos.'" value="'.htmlentities($row['year']).'" />'; 
-            echo '<input type="button" value="-"onclick="$(\'#position'.$countPos.'\').remove();return false;"></p>';
-            echo '<textarea name="desc'.$countPos.'" rows="8" cols="80">'.htmlentities($row['description']).'</textarea>';
-            echo '</div>';
+        $countEdu = 0;
+
+        if(count($position !== 0)){
+
+            foreach($position as $row){
+                $countPos++;
+                echo '<div id="position'.$countPos.'">';
+                echo '<p>Year: <input type="text" name="year'.$countPos.'" value="'.htmlentities($row['year']).'" />'; 
+                echo '<input type="button" value="-"onclick="$(\'#position'.$countPos.'\').remove();return false;"></p>';
+                echo '<textarea name="desc'.$countPos.'" rows="8" cols="80">'.htmlentities($row['description']).'</textarea>';
+                echo '</div>';
+            }
+        }
+
+        if(count($education !== 0)){
+
+            foreach($education as $row){
+                $countEdu++;
+                echo '<div id="education'.$countEdu.'">';
+                echo '<p>Year: <input type="text" name="year'.$countEdu.'" value="'.htmlentities($row['year']).'" />'; 
+                echo '<input type="button" value="-"onclick="$(\'#education'.$countEdu.'\').remove();return false;"></p>';
+                echo '<p>Institute: <input name="name'.$countEdu.'" value ="'.htmlentities($row['name']).'">';
+                echo '</div>';
+            }
         }
         
     ?>
     </div>
     <script>
-        countPos = <?= $countPos ?>;
+        //  add new position and education data
 
-        // http://stackoverflow.com/questions/17650776/add-remove-html-inside-div-using-javascript
+        countPos = <?= $countPos ?>;
+        countEdu = <?= $countEdu ?>;
+
+
         $(document).ready(function(){
            
             $('#addPos').click(function(event){
-                // http://api.jquery.com/event.preventdefault/
+
                 event.preventDefault();
                 if ( countPos >= 9 ) {
                     alert("Maximum of nine position entries exceeded");
@@ -148,6 +190,26 @@ $profile_id = $row['profile_id'];
                     <input type="button" value="-" \
                         onclick="$(\'#position'+countPos+'\').remove();return false;"></p> \
                     <textarea name="desc'+countPos+'" rows="8" cols="80"></textarea>\
+                    </div>');
+            });
+
+            $('#addEdu').click(function(event){
+                // http://api.jquery.com/event.preventdefault/
+                event.preventDefault();
+
+                if ( countEdu >= 9 ) {
+                    alert("Maximum of nine education entries exceeded");
+                    return;
+                }
+                
+                countEdu++;
+                
+                $('#education_fields').append(
+                    '<div id="education'+countEdu+'"> \
+                    <p>Year: <input type="text" name="year'+countEdu+'" value="" /> \
+                    <input type="button" value="-" \
+                        onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
+                    <p>Institute: <input type="text" name="name'+countEdu+'"></p>\
                     </div>');
             });
         });
