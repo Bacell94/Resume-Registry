@@ -58,7 +58,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php
     // display position and education data if available
 
-    if(count($position) !== 0){
+    if($position !== false){
         echo "<p>Positions:";
         echo "<ul>";
         foreach($position as $row){
@@ -68,7 +68,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo "</p>";
     }
 
-    if(count($education) !== 0){
+    if($education !== false){
         echo "<p>Education:";
         echo "<ul>";
         foreach($education as $row){

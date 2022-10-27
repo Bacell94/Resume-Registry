@@ -70,9 +70,8 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
 }
 
 // select profile data
-$stmt = $pdo->prepare("SELECT * FROM profile where profile_id = :pid AND user_id = :uid");
-$stmt->execute(array(':pid' => $_GET['profile_id']),
-                    ':uid' => $_SESSION['uid']);
+$stmt = $pdo->prepare("SELECT * FROM profile where profile_id = :pid");
+$stmt->execute(array(':pid' => $_GET['profile_id']));
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 if ( $row === false ) {
     $_SESSION['error'] = 'Bad value for profile_id';
@@ -151,7 +150,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $countPos = 0;
         $countEdu = 0;
 
-        if(count($position !== 0)){
+        if($position !== false){
 
             foreach($position as $row){
                 $countPos++;
@@ -163,7 +162,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
-        if(count($education !== 0)){
+        if($education !== false){
 
             foreach($education as $row){
                 $countEdu++;
@@ -223,9 +222,10 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
                     <p>Institute: <input type="text" class="school" name="school'+countEdu+'"></p>\
                     </div>');
+                    
+                $('.school').autocomplete({ source: "school.php" });
+                
             });
-
-            $('.school').autocomplete({ source: "school.php" });
 
         });
     </script>

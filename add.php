@@ -18,7 +18,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         header($header);
         return;
     }
-    
+
     if(is_string(validatePosition())){
         $_SESSION['error'] = validatePosition();
         header($header);
@@ -152,9 +152,10 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
                     <p>Institute: <input class="school" type="text" name="school'+countEdu+'" value=""></p>\
                     </div>');
+                    
+                $('.school').autocomplete({ source: "school.php" });
+                
             });
-
-            $('.school').autocomplete({ source: "school.php" });
 
         });
 
