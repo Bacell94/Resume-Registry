@@ -17,20 +17,21 @@ $headline = htmlentities($row['headline']);
 $summary = htmlentities($row['summary']);
 
 // select position data
-$stmt = $pdo->prepare('SELECT * FROM position WHERE profile_id = pid');
+$stmt = $pdo->prepare('SELECT * FROM position 
+                        WHERE profile_id = :pid
+                        ORDER BY rank');
 $stmt->execute(array(':pid' => $_GET['profile_id']));
-$position = array();
-while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $position[] = $row;
-}
+$position = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 // select education data
-$stmt = $pdo->prepare('SELECT * FROM education WHERE profile_id = :profile_id');
+$stmt = $pdo->prepare('SELECT year, name FROM 
+                        education JOIN institution 
+                        ON education.institution_id = institution.institution_id 
+                        WHERE profile_id = :profile_id
+                        ORDER BY rank');
 $stmt->execute(array(':profile_id' => $_GET['profile_id']));
-$education = array();
-while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $education[] = $row;
-}
+$education = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
