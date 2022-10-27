@@ -63,6 +63,9 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     // insert position data
     insertPosition($pdo,$_REQUEST['profile_id']);
 
+    insertEducation($pdo,$_REQUEST['profile_id']);
+
+
     $_SESSION['success'] = 'Record updated';
 
     header( 'Location: index.php' ) ;
@@ -114,7 +117,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css"> 
     
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
-    <title>Bacell Saleh eaa35402</title>
+    <title>Bacell Saleh 02fc743e</title>
 </head>
 <body>
     
@@ -222,7 +225,7 @@ $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
                     <p>Institute: <input type="text" class="school" name="school'+countEdu+'"></p>\
                     </div>');
-                    
+
                 $('.school').autocomplete({ source: "school.php" });
                 
             });

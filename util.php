@@ -35,7 +35,7 @@ function validateProfile(){
 }
 
 function validatePosition() {
-  
+
     for($i=1; $i<=9; $i++) {
       if ( ! isset($_POST['year'.$i]) ) continue;
       if ( ! isset($_POST['desc'.$i]) ) continue;
@@ -95,6 +95,49 @@ function insertPosition($pdo,$pid){
     ':rank' => $rank,
     ':year' => $year,
     ':desc' => $desc)
+    );
+  
+    $rank++;
+  }
+}
+
+function insertEducation($pdo,$pid){
+  $rank = 1;
+  
+  for($i=1; $i<=9; $i++) {
+
+    if ( ! isset($_POST['year'.$i]) ) continue;
+    if ( ! isset($_POST['school'.$i]) ) continue;
+  
+    $year = $_POST['year'.$i];
+    $name = $_POST['school'.$i];
+
+    // check if institution name already exists in table
+    $institution_id = false;
+    $stmt = $pdo->prepare('SELECT * FROM institution WHERE name = :name');
+    $stmt->execute(array( ':name' => $name));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($row !== false) $institution_id = $row['institution_id'];
+
+    // if id doesn't exist insert it in to the table
+    if($institution_id === false){
+      
+      $stmt = $pdo->prepare('INSERT INTO institution (name) VALUES (:name)');
+      $stmt->execute(array(':name' => $name));
+      $institution_id =  $pdo->lastInsertId();
+    }
+   
+
+    // insert education data
+    $stmt = $pdo->prepare('INSERT INTO education
+      (profile_id, rank, year, institution_id)
+      VALUES ( :pid, :rank, :year, :institution_id)');
+
+    $stmt->execute(array(
+    ':pid' => $pid,
+    ':rank' => $rank,
+    ':year' => $year,
+    ':institution_id' => $institution_id)
     );
   
     $rank++;

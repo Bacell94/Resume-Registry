@@ -50,7 +50,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
 
     insertPosition($pdo,$profile_id);
 
-    
+    insertEducation($pdo,$profile_id);
 
     $_SESSION['success'] = 'Record Added';
 
@@ -72,7 +72,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css"> 
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
-    <title>Bacell Saleh eaa35402</title>
+    <title>Bacell Saleh 02fc743e</title>
 </head>
 <body>
     <h1>Add new profile</h1>
@@ -152,7 +152,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                         onclick="$(\'#education'+countEdu+'\').remove();return false;"></p> \
                     <p>Institute: <input class="school" type="text" name="school'+countEdu+'" value=""></p>\
                     </div>');
-                    
+
                 $('.school').autocomplete({ source: "school.php" });
                 
             });
